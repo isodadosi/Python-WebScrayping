@@ -1,0 +1,4 @@
+[0710/205607.506:ERROR:process_reader_win.cc(123)] NtOpenThread: {アクセス拒否} プロセスはオブジェクトのアクセスを要求しましたが、アクセス権が与えられていません。 (0xc0000022)
+[0710/205607.512:ERROR:process_reader_win.cc(123)] NtOpenThread: {アクセス拒否} プロセスはオブジェクトのアクセスを要求しましたが、アクセス権が与えられていません。 (0xc0000022)
+[0710/205607.523:ERROR:exception_snapshot_win.cc(98)] thread ID 13072 not found in process
+[0710/205607.522:ERROR:exception_snapshot_win.cc(98)] thread ID 7208 not found in process

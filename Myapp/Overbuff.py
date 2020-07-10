@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[62]:
+# In[1]:
 
 
 from selenium import webdriver
@@ -13,14 +13,15 @@ import time
 import pandas as pd
 
 
-# In[63]:
+# In[2]:
 
 
-# プレイヤー名 テストとしてランキング自分のID
-PLAYER = "ISUQQ#1380"
+# プレイヤー名 テストとして自分のID
+PLAYER_PC = "ISUQQ#1380"
+PLAYER_PS4 = "isopon_24"
 
 
-# In[64]:
+# In[3]:
 
 
 #Chormeの起動、自動操作
@@ -29,7 +30,7 @@ browser = webdriver.Chrome(executable_path = 'C:\\prog\\Python\\WebScraping\\chr
 browser.implicitly_wait(3)
 
 
-# In[65]:
+# In[4]:
 
 
 # ログインするページへのアクセス
@@ -41,18 +42,18 @@ time.sleep(3)
 print("ログインページにアクセスしました")
 
 
-# In[69]:
+# In[24]:
 
 
 # 現在は大画面でのUIにしか対応していない
 
 search_name = browser.find_element_by_name('q')
 search_name.clear()
-search_name.send_keys(PLAYER)
+search_name.send_keys(PLAYER_PS4)
 print("プレイヤー名を入力")
 
 
-# In[70]:
+# In[25]:
 
 
 # 検索ボタンのクリック
@@ -62,7 +63,7 @@ search_button.click()
 print("検索ボタンのクリック")
 
 
-# In[71]:
+# In[26]:
 
 
 # プレイヤーの選択とクリック
@@ -71,7 +72,7 @@ player_select = browser.find_element_by_class_name('SearchResult')
 player_select.click()
 
 
-# In[32]:
+# In[27]:
 
 
 # いろいろ試してみたがセッションで値が変わる様なページでは直接値を取得するのは向いていないっぽい
@@ -91,23 +92,60 @@ player_select.click()
 # print(tableElem)
 
 
-# In[81]:
+# In[40]:
 
 
-cur_url = browser.current_url 
-# error 429がでる 明日原因を解明しよう
-test_url = "https://www.overbuff.com/"
-# おそらく以下の書き方だと動的に数値が変わるページには向いていないのかエラーが出る
-response = req.urlopen(test_url)
-parse_html = BeautifulSoup(response, 'html.parser')
-
-# ブラウザのソースをそのまま取得する方法で解決した
-# raw_html = browser.page_source
-# print(raw_html)
+# 1. urllibを使用してソースを取得する方法は失敗、overbuffのサイトで429エラーがでる
+# test1->pass test2->error cur->error
+# cur_url = browser.current_url 
+# # error 429がでる 明日原因を解明しよう
+# test1_url = "https://ja.wikipedia.org/wiki/%E3%82%A6%E3%82%A3%E3%82%AD"
+# test2_url = "https://www.overbuff.com/"
+# response = req.urlopen(test_url)
 
 
-# In[79]:
+# 2. ブラウザのソースをそのまま取得する方法で解決した(seleniumで取得->Beautifulsoupへ変換)
+raw_html = browser.page_source
+parse_html = BeautifulSoup(raw_html, 'html5lib')
+# print(parse_html.prettify())
 
 
-parse_html
+# In[138]:
+
+
+# 各ロールのrateを出力
+
+table = parse_html.findAll("table", {"class":"table-data"})[0]
+rows = table.findAll("tr")
+
+rate_list = []
+rate_damage_list = []
+rate_support_list = []
+rate_tank_list = []
+
+
+for row in rows[1:] :
+#     print(row)
+    for sell in row.findAll('td'):
+        rate_list.append(sell.get_text())
+
+
+rate_damage_list.append(rate_list[2])
+rate_support_list.append(rate_list[5])
+rate_tank_list.append(rate_list[8])
+
+# print(rate_list)
+
+
+# In[139]:
+
+
+# Pandasを用いて見やすい表へ
+df_rate_list = pd.DataFrame({'Damege':rate_damage_list,'Suport':rate_support_list, 'Tank':rate_tank_list})
+
+
+# In[137]:
+
+
+df_rate_list
 
