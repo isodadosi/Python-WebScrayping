@@ -42,7 +42,7 @@ time.sleep(3)
 print("ログインページにアクセスしました")
 
 
-# In[24]:
+# In[5]:
 
 
 # 現在は大画面でのUIにしか対応していない
@@ -53,7 +53,7 @@ search_name.send_keys(PLAYER_PS4)
 print("プレイヤー名を入力")
 
 
-# In[25]:
+# In[6]:
 
 
 # 検索ボタンのクリック
@@ -63,7 +63,7 @@ search_button.click()
 print("検索ボタンのクリック")
 
 
-# In[26]:
+# In[7]:
 
 
 # プレイヤーの選択とクリック
@@ -92,7 +92,7 @@ player_select.click()
 # print(tableElem)
 
 
-# In[40]:
+# In[8]:
 
 
 # 1. urllibを使用してソースを取得する方法は失敗、overbuffのサイトで429エラーがでる
@@ -110,7 +110,7 @@ parse_html = BeautifulSoup(raw_html, 'html5lib')
 # print(parse_html.prettify())
 
 
-# In[138]:
+# In[27]:
 
 
 # 各ロールのrateを出力
@@ -123,29 +123,62 @@ rate_damage_list = []
 rate_support_list = []
 rate_tank_list = []
 
+def record_list():
 
-for row in rows[1:] :
-#     print(row)
-    for sell in row.findAll('td'):
-        rate_list.append(sell.get_text())
-
-
-rate_damage_list.append(rate_list[2])
-rate_support_list.append(rate_list[5])
-rate_tank_list.append(rate_list[8])
-
-# print(rate_list)
+    for row in rows[1:] :
+    #     print(row)
+        for sell in row.findAll('td'):
+            rate_list.append(sell.get_text())
 
 
-# In[139]:
+    rate_damage_list.append(rate_list[2])
+    rate_support_list.append(rate_list[5])
+    rate_tank_list.append(rate_list[8])
+    rate_list.clear()
+
+def remove_list():
+    rate_damage_list.clear()
+    rate_suppport_list.clear()
+    rate_tank_list.clear()
+
+
+# In[31]:
+
+
+record_list()
+
+
+# In[40]:
 
 
 # Pandasを用いて見やすい表へ
 df_rate_list = pd.DataFrame({'Damege':rate_damage_list,'Suport':rate_support_list, 'Tank':rate_tank_list})
 
 
-# In[137]:
+# In[41]:
 
 
 df_rate_list
+
+
+# In[42]:
+
+
+# CSVファイルへ
+df_rate_list.to_csv('overbuff.csv')
+
+
+# In[43]:
+
+
+# 更新ボタン押したあとにデータを追加
+update_button = browser.find_element_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[1]/div[1]/div/div[2]/div[2]/i')
+time.sleep(1)
+update_button.click()
+print("更新ボタンをクリック")
+
+time.sleep(10)
+
+record_list()
+print("データを追加")
 
