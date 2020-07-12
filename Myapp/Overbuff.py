@@ -1,19 +1,20 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[61]:
 
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import urllib.request as req
+import datetime
 # 処理時間の計測など
 import time
 # csv操作、グラフ化、データ集計や加工
 import pandas as pd
 
 
-# In[2]:
+# In[62]:
 
 
 # プレイヤー名 テストとして自分のID
@@ -21,16 +22,17 @@ PLAYER_PC = "ISUQQ#1380"
 PLAYER_PS4 = "isopon_24"
 
 
-# In[3]:
+# In[63]:
 
 
 #Chormeの起動、自動操作
 browser = webdriver.Chrome(executable_path = 'C:\\prog\\Python\\WebScraping\\chromedriver.exe')
 # 指定したドライバが見つかるまでの待ち時間
+browser.maximize_window()
 browser.implicitly_wait(3)
 
 
-# In[4]:
+# In[64]:
 
 
 # ログインするページへのアクセス
@@ -42,37 +44,44 @@ time.sleep(3)
 print("ログインページにアクセスしました")
 
 
-# In[5]:
+# In[65]:
 
 
 # 現在は大画面でのUIにしか対応していない
 
-search_name = browser.find_element_by_name('q')
+search_name = browser.find_element_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[1]/section[1]/article/form/input')
 search_name.clear()
 search_name.send_keys(PLAYER_PS4)
 print("プレイヤー名を入力")
 
 
-# In[6]:
+# In[66]:
 
 
 # 検索ボタンのクリック
-search_button = browser.find_element_by_xpath('/html/body/div[1]/div[1]/div[2]/div/div[1]/form/button')
+# 画面上の検索ボタン
+# search_button = browser.find_element_by_xpath('/html/body/div[1]/div[1]/div[2]/div/div[1]/form/button')
+
+# 画面中央の検索ボタン
+search_button = browser.find_element_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[1]/section[1]/article/form/button')
+
 time.sleep(1)
 search_button.click()
 print("検索ボタンのクリック")
 
 
-# In[7]:
+# In[67]:
 
 
 # プレイヤーの選択とクリック
 #  ※現在の書き方では複数選択肢がある場合は一番最初のものが選択される
+
 player_select = browser.find_element_by_class_name('SearchResult')
+
 player_select.click()
 
 
-# In[27]:
+# In[68]:
 
 
 # いろいろ試してみたがセッションで値が変わる様なページでは直接値を取得するのは向いていないっぽい
@@ -92,7 +101,7 @@ player_select.click()
 # print(tableElem)
 
 
-# In[8]:
+# In[69]:
 
 
 # 1. urllibを使用してソースを取得する方法は失敗、overbuffのサイトで429エラーがでる
@@ -110,7 +119,7 @@ parse_html = BeautifulSoup(raw_html, 'html5lib')
 # print(parse_html.prettify())
 
 
-# In[27]:
+# In[70]:
 
 
 # 各ロールのrateを出力
@@ -142,33 +151,13 @@ def remove_list():
     rate_tank_list.clear()
 
 
-# In[31]:
+# In[71]:
 
 
-record_list()
+# record_list()
 
 
-# In[40]:
-
-
-# Pandasを用いて見やすい表へ
-df_rate_list = pd.DataFrame({'Damege':rate_damage_list,'Suport':rate_support_list, 'Tank':rate_tank_list})
-
-
-# In[41]:
-
-
-df_rate_list
-
-
-# In[42]:
-
-
-# CSVファイルへ
-df_rate_list.to_csv('overbuff.csv')
-
-
-# In[43]:
+# In[72]:
 
 
 # 更新ボタン押したあとにデータを追加
@@ -181,4 +170,25 @@ time.sleep(10)
 
 record_list()
 print("データを追加")
+
+
+# In[73]:
+
+
+# Pandasを用いて見やすい表へ
+time = datetime.datetime.now()
+df_rate_list = pd.DataFrame({'time': '{0:%Y/%m/%d %H:%M}'.format(time), 'Damege':rate_damage_list,'Suport':rate_support_list, 'Tank':rate_tank_list})
+
+
+# In[74]:
+
+
+df_rate_list
+
+
+# In[75]:
+
+
+# CSVファイルへ
+df_rate_list.to_csv('overbuff.csv', mode='a')
 
