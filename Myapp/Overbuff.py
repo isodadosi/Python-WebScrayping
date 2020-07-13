@@ -178,6 +178,7 @@ print("データを追加")
 # Pandasを用いて見やすい表へ
 time = datetime.datetime.now()
 df_rate_list = pd.DataFrame({'time': '{0:%Y/%m/%d %H:%M}'.format(time), 'Damege':rate_damage_list,'Suport':rate_support_list, 'Tank':rate_tank_list})
+print("pandasのdataframeへ")
 
 
 # In[74]:
@@ -186,9 +187,10 @@ df_rate_list = pd.DataFrame({'time': '{0:%Y/%m/%d %H:%M}'.format(time), 'Damege'
 df_rate_list
 
 
-# In[75]:
+# In[2]:
 
 
 # CSVファイルへ
-df_rate_list.to_csv('overbuff.csv', mode='a')
+df_rate_list.to_csv('overbuff.csv', mode='a', header=False)
+print('csvファイルへ出力')
 
